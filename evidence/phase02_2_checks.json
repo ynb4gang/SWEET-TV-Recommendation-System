@@ -1,0 +1,19 @@
+{
+  "total_interactions": 1516807,
+  "train_interactions": 856917,
+  "val_interactions": 659890,
+  "train_positive_labels": 114851,
+  "val_positive_labels": 140486,
+  "unique_users": 4895,
+  "unique_programmes": 4363,
+  "train_unique_users": 4841,
+  "val_unique_users": 4806,
+  "train_unique_programmes": 2973,
+  "val_unique_programmes": 3231,
+  "repeated_user_programme_pairs": 145110,
+  "partial_train_interactions": 742066,
+  "partial_val_interactions": 519404,
+  "train_viewing_fragments": 3945173,
+  "val_viewing_fragments": 1877821,
+  "leakage_assertions_passed": true
+}

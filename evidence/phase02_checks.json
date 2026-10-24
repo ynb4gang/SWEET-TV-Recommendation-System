@@ -1,0 +1,8 @@
+{
+  "total_interactions": 228573,
+  "train_interactions": 115124,
+  "val_interactions": 113449,
+  "unique_users": 4841,
+  "unique_programmes": 3866,
+  "relevant_interactions": 228573
+}

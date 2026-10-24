@@ -1,0 +1,6 @@
+{
+  "phase05_ppr.json": "Historical result: invalid positive-only claim (partial edges admitted); superseded, preserved",
+  "phase03_baselines.json": "INVALID: target-derived candidates and positive-only population; preserved",
+  "phase03_1_corrected_baselines.json": "Historical restricted cohort and omitted cold-start predictions; preserved",
+  "phase04_cbf.json": "Historical cohort excludes raw users without recognized programmes; preserved"
+}

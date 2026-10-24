@@ -1,0 +1,16 @@
+{
+  "total_interactions": 1516210,
+  "train_interactions": 857763,
+  "val_interactions": 658447,
+  "train_positive_labels": 115315,
+  "val_positive_labels": 140301,
+  "unique_users": 4895,
+  "unique_programmes": 4363,
+  "train_unique_users": 4841,
+  "val_unique_users": 4806,
+  "train_unique_programmes": 2979,
+  "val_unique_programmes": 3225,
+  "repeated_user_programme_pairs": 144513,
+  "partial_train_broadcasts": 742448,
+  "partial_val_broadcasts": 518146
+}

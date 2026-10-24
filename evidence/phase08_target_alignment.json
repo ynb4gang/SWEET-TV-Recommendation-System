@@ -1,0 +1,3448 @@
+{
+  "created_msk": "2026-10-24T17:37:49.988201+03:00",
+  "target_hypothesis": "Top-5 most frequently >=80%-completed distinct airings; official Kaggle definition NOT confirmed",
+  "definitions": {
+    "all_positive": "Every programme with at least one >=80% completed airing in the window; unchanged old metric",
+    "top5_frequency": "Distinct qualifying airing count descending, numeric programme ID ascending, retain <=5 per user; empty users contribute zero"
+  },
+  "methodology": {
+    "cohorts": "Fixed 4876 raw training-viewing users and all 1260 exact template users, independently reported",
+    "segments": "Union overlapping viewing fragments per user-airing, clip observed seconds to snapshot, retain complete airing duration denominator",
+    "anchor_grid": {
+      "weights_order": [
+        "exposure",
+        "60-day-decayed item-neighbor propagation",
+        "PPR reciprocal rank",
+        "channel/time",
+        "schedule recurrence"
+      ],
+      "weights": {
+        "personal": [
+          0.55,
+          0.2,
+          0.15,
+          0.05,
+          0.05
+        ],
+        "balanced": [
+          0.4,
+          0.3,
+          0.15,
+          0.1,
+          0.05
+        ],
+        "collaborative": [
+          0.25,
+          0.4,
+          0.2,
+          0.1,
+          0.05
+        ]
+      },
+      "smoothing": [
+        10,
+        80
+      ]
+    },
+    "candidate_pool": "220, round-robin union of frequency, exposure10/80, recency, PPR, item neighbors, context, popularity; no target-guided insertion",
+    "neighbors": "Meaningful >=50% coverage AND >=60 seconds; binary cosine co-viewing, no self-links, top80 neighbors; all historical users in graph",
+    "exposure": "qualifying_view_weight=1 for each distinct >=80% airing; sum n80(user,item,channel)*future_airings(item,channel)/(past_airings(item,channel)+smoothing)",
+    "training": "One fixed contextual LambdaRank configuration, trained on the same Top-5 target as evaluation; B is a score blend, not another architecture",
+    "selection": "Mean submission-cohort Top5 MAP across two disjoint chronological backtests; prefer configurations improving both versus current PPR; original long split diagnostic only",
+    "caveats": [
+      "Long main target overlaps both short backtests",
+      "Kaggle relevance definition and future viewing labels unavailable",
+      "Only the saved early-trained LightGBM can be fairly rescored before any training; production phase-six model contains validation labels and is excluded"
+    ]
+  },
+  "target_verification": {
+    "early": {
+      "compared_pairs": 509996,
+      "different_qualifying_counts": 0,
+      "qualifying_airings": 161957
+    },
+    "short": {
+      "compared_pairs": 318814,
+      "different_qualifying_counts": 0,
+      "qualifying_airings": 134742
+    },
+    "late": {
+      "compared_pairs": 398586,
+      "different_qualifying_counts": 0,
+      "qualifying_airings": 160262
+    },
+    "main": {
+      "compared_pairs": 659890,
+      "different_qualifying_counts": 0,
+      "qualifying_airings": 295044
+    }
+  },
+  "before_training": {
+    "short": {
+      "models": {
+        "recency": {
+          "all": {
+            "all_positive": {
+              "map5": 0.3149919674596664,
+              "candidate_recall_micro": 0.38148618470026713,
+              "candidate_recall_macro_including_empty": 0.35407752834575235,
+              "candidate_map5_ceiling": 0.5760151763740772,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.23240719852337982,
+              "candidate_recall_micro": 0.7747994789881402,
+              "candidate_recall_macro_including_empty": 0.5193293683347006,
+              "candidate_map5_ceiling": 0.5193293683347006,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.3710050705467372,
+              "candidate_recall_micro": 0.3929397863226823,
+              "candidate_recall_macro_including_empty": 0.39719007571031467,
+              "candidate_map5_ceiling": 0.6573544973544974,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.2708013668430335,
+              "candidate_recall_micro": 0.8049521139920579,
+              "candidate_recall_macro_including_empty": 0.597037037037037,
+              "candidate_map5_ceiling": 0.597037037037037,
+              "users": 1260
+            }
+          }
+        },
+        "ppr": {
+          "all": {
+            "all_positive": {
+              "map5": 0.3201143924892899,
+              "candidate_recall_micro": 0.38148618470026713,
+              "candidate_recall_macro_including_empty": 0.35407752834575235,
+              "candidate_map5_ceiling": 0.5760151763740772,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.23658759456749612,
+              "candidate_recall_micro": 0.7747994789881402,
+              "candidate_recall_macro_including_empty": 0.5193293683347006,
+              "candidate_map5_ceiling": 0.5193293683347006,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.3769402557319224,
+              "candidate_recall_micro": 0.3929397863226823,
+              "candidate_recall_macro_including_empty": 0.39719007571031467,
+              "candidate_map5_ceiling": 0.6573544973544974,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.2752630070546737,
+              "candidate_recall_micro": 0.8049521139920579,
+              "candidate_recall_macro_including_empty": 0.597037037037037,
+              "candidate_map5_ceiling": 0.597037037037037,
+              "users": 1260
+            }
+          }
+        },
+        "hybrid": {
+          "all": {
+            "all_positive": {
+              "map5": 0.3175546896363139,
+              "candidate_recall_micro": 0.38148618470026713,
+              "candidate_recall_macro_including_empty": 0.35407752834575235,
+              "candidate_map5_ceiling": 0.5760151763740772,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.23284659557013948,
+              "candidate_recall_micro": 0.7747994789881402,
+              "candidate_recall_macro_including_empty": 0.5193293683347006,
+              "candidate_map5_ceiling": 0.5193293683347006,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.37427425044091706,
+              "candidate_recall_micro": 0.3929397863226823,
+              "candidate_recall_macro_including_empty": 0.39719007571031467,
+              "candidate_map5_ceiling": 0.6573544973544974,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.2712504409171076,
+              "candidate_recall_micro": 0.8049521139920579,
+              "candidate_recall_macro_including_empty": 0.597037037037037,
+              "candidate_map5_ceiling": 0.597037037037037,
+              "users": 1260
+            }
+          }
+        },
+        "existing_lightgbm": {
+          "all": {
+            "all_positive": {
+              "map5": 0.3356994576611066,
+              "candidate_recall_micro": 0.38148618470026713,
+              "candidate_recall_macro_including_empty": 0.35407752834575235,
+              "candidate_map5_ceiling": 0.5760151763740772,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.24879284021511255,
+              "candidate_recall_micro": 0.7747994789881402,
+              "candidate_recall_macro_including_empty": 0.5193293683347006,
+              "candidate_map5_ceiling": 0.5193293683347006,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.3945623897707231,
+              "candidate_recall_micro": 0.3929397863226823,
+              "candidate_recall_macro_including_empty": 0.39719007571031467,
+              "candidate_map5_ceiling": 0.6573544973544974,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.2897264109347442,
+              "candidate_recall_micro": 0.8049521139920579,
+              "candidate_recall_macro_including_empty": 0.597037037037037,
+              "candidate_map5_ceiling": 0.597037037037037,
+              "users": 1260
+            }
+          }
+        }
+      },
+      "target_sizes": {
+        "all": {
+          "all_positive": {
+            "users": 4876,
+            "mean": 14.050656275635767,
+            "distribution": {
+              "0": 1523,
+              "1": 255,
+              "2": 213,
+              "3": 186,
+              "4": 147,
+              "5": 163,
+              "6": 164,
+              "7": 136,
+              "8": 140,
+              "9": 129,
+              "10": 114,
+              "11": 104,
+              "12": 87,
+              "13": 87,
+              "14": 74,
+              "15": 75,
+              "16": 63,
+              "17": 67,
+              "18": 64,
+              "19": 49,
+              "20": 43,
+              "21": 43,
+              "22": 46,
+              "23": 34,
+              "24": 40,
+              "25": 23,
+              "26": 37,
+              "27": 23,
+              "28": 24,
+              "29": 22,
+              "30": 28,
+              "31": 22,
+              "32": 16,
+              "33": 10,
+              "34": 15,
+              "35": 12,
+              "36": 10,
+              "37": 10,
+              "38": 11,
+              "39": 11,
+              "40": 16,
+              "41": 15,
+              "42": 12,
+              "43": 12,
+              "44": 17,
+              "45": 15,
+              "46": 16,
+              "47": 10,
+              "48": 10,
+              "49": 9,
+              "50": 12,
+              "51": 15,
+              "52": 20,
+              "53": 14,
+              "54": 11,
+              "55": 7,
+              "56": 12,
+              "57": 8,
+              "58": 6,
+              "59": 10,
+              "60": 15,
+              "61": 8,
+              "62": 9,
+              "63": 15,
+              "64": 5,
+              "65": 8,
+              "66": 7,
+              "67": 7,
+              "68": 12,
+              "69": 7,
+              "70": 11,
+              "71": 4,
+              "72": 7,
+              "73": 9,
+              "74": 7,
+              "75": 3,
+              "76": 4,
+              "77": 11,
+              "78": 3,
+              "79": 7,
+              "80": 7,
+              "81": 3,
+              "82": 3,
+              "83": 7,
+              "84": 7,
+              "85": 3,
+              "86": 5,
+              "87": 6,
+              "88": 8,
+              "89": 1,
+              "90": 4,
+              "91": 7,
+              "92": 8,
+              "93": 3,
+              "94": 2,
+              "95": 4,
+              "96": 3,
+              "98": 3,
+              "99": 3,
+              "100": 2,
+              "101": 1,
+              "102": 2,
+              "103": 4,
+              "104": 5,
+              "105": 3,
+              "106": 5,
+              "107": 1,
+              "108": 2,
+              "109": 2,
+              "110": 1,
+              "111": 4,
+              "112": 1,
+              "114": 3,
+              "115": 2,
+              "116": 3,
+              "117": 3,
+              "119": 2,
+              "120": 1,
+              "121": 2,
+              "124": 2,
+              "129": 1,
+              "131": 1,
+              "132": 2,
+              "135": 1,
+              "137": 1,
+              "140": 1,
+              "145": 1,
+              "155": 1,
+              "162": 1,
+              "189": 1,
+              "200": 1
+            }
+          },
+          "top5_frequency": {
+            "users": 4876,
+            "mean": 2.991591468416735,
+            "distribution": {
+              "0": 1523,
+              "1": 255,
+              "2": 213,
+              "3": 186,
+              "4": 147,
+              "5": 2552
+            }
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "users": 1260,
+            "mean": 16.11984126984127,
+            "distribution": {
+              "0": 312,
+              "1": 53,
+              "2": 39,
+              "3": 49,
+              "4": 32,
+              "5": 42,
+              "6": 36,
+              "7": 44,
+              "8": 45,
+              "9": 39,
+              "10": 40,
+              "11": 37,
+              "12": 21,
+              "13": 26,
+              "14": 25,
+              "15": 32,
+              "16": 18,
+              "17": 32,
+              "18": 26,
+              "19": 23,
+              "20": 16,
+              "21": 14,
+              "22": 16,
+              "23": 12,
+              "24": 12,
+              "25": 5,
+              "26": 11,
+              "27": 6,
+              "28": 7,
+              "29": 9,
+              "30": 12,
+              "31": 9,
+              "32": 2,
+              "33": 2,
+              "34": 2,
+              "35": 5,
+              "36": 1,
+              "38": 3,
+              "39": 1,
+              "40": 7,
+              "41": 2,
+              "43": 1,
+              "44": 4,
+              "45": 3,
+              "46": 4,
+              "47": 1,
+              "48": 1,
+              "49": 5,
+              "50": 2,
+              "51": 4,
+              "52": 2,
+              "53": 6,
+              "54": 6,
+              "55": 2,
+              "56": 5,
+              "57": 3,
+              "59": 4,
+              "60": 2,
+              "61": 3,
+              "63": 1,
+              "66": 2,
+              "68": 1,
+              "69": 2,
+              "70": 4,
+              "71": 2,
+              "72": 1,
+              "74": 2,
+              "76": 1,
+              "77": 3,
+              "78": 1,
+              "79": 1,
+              "80": 3,
+              "81": 1,
+              "82": 1,
+              "84": 3,
+              "86": 1,
+              "87": 3,
+              "89": 1,
+              "90": 1,
+              "91": 3,
+              "92": 3,
+              "93": 1,
+              "94": 2,
+              "98": 2,
+              "99": 2,
+              "101": 1,
+              "102": 1,
+              "103": 1,
+              "104": 2,
+              "105": 2,
+              "106": 2,
+              "107": 1,
+              "108": 1,
+              "109": 1,
+              "110": 1,
+              "111": 1,
+              "112": 1,
+              "114": 1,
+              "115": 1,
+              "116": 2,
+              "117": 2,
+              "121": 1,
+              "124": 2,
+              "132": 1,
+              "137": 1,
+              "145": 1,
+              "162": 1,
+              "200": 1
+            }
+          },
+          "top5_frequency": {
+            "users": 1260,
+            "mean": 3.3976190476190475,
+            "distribution": {
+              "0": 312,
+              "1": 53,
+              "2": 39,
+              "3": 49,
+              "4": 32,
+              "5": 775
+            }
+          }
+        }
+      }
+    },
+    "late": {
+      "models": {
+        "recency": {
+          "all": {
+            "all_positive": {
+              "map5": 0.3872749179655456,
+              "candidate_recall_micro": 0.3913229678447794,
+              "candidate_recall_macro_including_empty": 0.44671818949849346,
+              "candidate_map5_ceiling": 0.7644790812141099,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.2828491591468417,
+              "candidate_recall_micro": 0.7452825564867912,
+              "candidate_recall_macro_including_empty": 0.6727235438884331,
+              "candidate_map5_ceiling": 0.6727235438884331,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.46213161375661377,
+              "candidate_recall_micro": 0.39223469812105405,
+              "candidate_recall_macro_including_empty": 0.4625327518100396,
+              "candidate_map5_ceiling": 0.8428042328042329,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.32782473544973545,
+              "candidate_recall_micro": 0.7715169214911527,
+              "candidate_recall_macro_including_empty": 0.7386772486772487,
+              "candidate_map5_ceiling": 0.7386772486772487,
+              "users": 1260
+            }
+          }
+        },
+        "ppr": {
+          "all": {
+            "all_positive": {
+              "map5": 0.39224688952693465,
+              "candidate_recall_micro": 0.3913229678447794,
+              "candidate_recall_macro_including_empty": 0.44671818949849346,
+              "candidate_map5_ceiling": 0.7644790812141099,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.28838648482362594,
+              "candidate_recall_micro": 0.7452825564867912,
+              "candidate_recall_macro_including_empty": 0.6727235438884331,
+              "candidate_map5_ceiling": 0.6727235438884331,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.46656040564373896,
+              "candidate_recall_micro": 0.39223469812105405,
+              "candidate_recall_macro_including_empty": 0.4625327518100396,
+              "candidate_map5_ceiling": 0.8428042328042329,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.3296635802469136,
+              "candidate_recall_micro": 0.7715169214911527,
+              "candidate_recall_macro_including_empty": 0.7386772486772487,
+              "candidate_map5_ceiling": 0.7386772486772487,
+              "users": 1260
+            }
+          }
+        },
+        "hybrid": {
+          "all": {
+            "all_positive": {
+              "map5": 0.39124304985871844,
+              "candidate_recall_micro": 0.3913229678447794,
+              "candidate_recall_macro_including_empty": 0.44671818949849346,
+              "candidate_map5_ceiling": 0.7644790812141099,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.2852572691641601,
+              "candidate_recall_micro": 0.7452825564867912,
+              "candidate_recall_macro_including_empty": 0.6727235438884331,
+              "candidate_map5_ceiling": 0.6727235438884331,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.4652111992945326,
+              "candidate_recall_micro": 0.39223469812105405,
+              "candidate_recall_macro_including_empty": 0.4625327518100396,
+              "candidate_map5_ceiling": 0.8428042328042329,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.326129188712522,
+              "candidate_recall_micro": 0.7715169214911527,
+              "candidate_recall_macro_including_empty": 0.7386772486772487,
+              "candidate_map5_ceiling": 0.7386772486772487,
+              "users": 1260
+            }
+          }
+        },
+        "existing_lightgbm": {
+          "all": {
+            "all_positive": {
+              "map5": 0.41272787348464124,
+              "candidate_recall_micro": 0.3913229678447794,
+              "candidate_recall_macro_including_empty": 0.44671818949849346,
+              "candidate_map5_ceiling": 0.7644790812141099,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.30527641053686994,
+              "candidate_recall_micro": 0.7452825564867912,
+              "candidate_recall_macro_including_empty": 0.6727235438884331,
+              "candidate_map5_ceiling": 0.6727235438884331,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.4905432098765432,
+              "candidate_recall_micro": 0.39223469812105405,
+              "candidate_recall_macro_including_empty": 0.4625327518100396,
+              "candidate_map5_ceiling": 0.8428042328042329,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.34847971781305115,
+              "candidate_recall_micro": 0.7715169214911527,
+              "candidate_recall_macro_including_empty": 0.7386772486772487,
+              "candidate_map5_ceiling": 0.7386772486772487,
+              "users": 1260
+            }
+          }
+        }
+      },
+      "target_sizes": {
+        "all": {
+          "all_positive": {
+            "users": 4876,
+            "mean": 17.23974569319114,
+            "distribution": {
+              "0": 379,
+              "1": 208,
+              "2": 194,
+              "3": 220,
+              "4": 228,
+              "5": 215,
+              "6": 233,
+              "7": 191,
+              "8": 188,
+              "9": 185,
+              "10": 172,
+              "11": 162,
+              "12": 147,
+              "13": 130,
+              "14": 104,
+              "15": 101,
+              "16": 97,
+              "17": 97,
+              "18": 87,
+              "19": 68,
+              "20": 76,
+              "21": 57,
+              "22": 67,
+              "23": 71,
+              "24": 41,
+              "25": 50,
+              "26": 62,
+              "27": 53,
+              "28": 49,
+              "29": 35,
+              "30": 35,
+              "31": 42,
+              "32": 34,
+              "33": 32,
+              "34": 30,
+              "35": 41,
+              "36": 27,
+              "37": 19,
+              "38": 19,
+              "39": 30,
+              "40": 24,
+              "41": 30,
+              "42": 18,
+              "43": 29,
+              "44": 22,
+              "45": 20,
+              "46": 23,
+              "47": 23,
+              "48": 26,
+              "49": 31,
+              "50": 19,
+              "51": 18,
+              "52": 21,
+              "53": 11,
+              "54": 16,
+              "55": 11,
+              "56": 17,
+              "57": 14,
+              "58": 8,
+              "59": 13,
+              "60": 7,
+              "61": 12,
+              "62": 8,
+              "63": 13,
+              "64": 12,
+              "65": 6,
+              "66": 9,
+              "67": 9,
+              "68": 13,
+              "69": 7,
+              "70": 3,
+              "71": 3,
+              "72": 6,
+              "73": 12,
+              "74": 4,
+              "75": 5,
+              "76": 4,
+              "77": 4,
+              "78": 4,
+              "79": 3,
+              "80": 3,
+              "81": 1,
+              "82": 2,
+              "83": 3,
+              "84": 4,
+              "85": 2,
+              "86": 1,
+              "87": 2,
+              "88": 2,
+              "89": 2,
+              "90": 1,
+              "91": 5,
+              "92": 2,
+              "93": 1,
+              "94": 2,
+              "95": 1,
+              "96": 2,
+              "97": 1,
+              "98": 3,
+              "99": 1,
+              "100": 2,
+              "102": 3,
+              "108": 1,
+              "109": 2,
+              "112": 2,
+              "115": 1,
+              "116": 1,
+              "118": 2,
+              "126": 1,
+              "127": 1,
+              "140": 1,
+              "143": 1,
+              "145": 1,
+              "161": 1,
+              "204": 1
+            }
+          },
+          "top5_frequency": {
+            "users": 4876,
+            "mean": 4.184372436423298,
+            "distribution": {
+              "0": 379,
+              "1": 208,
+              "2": 194,
+              "3": 220,
+              "4": 228,
+              "5": 3647
+            }
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "users": 1260,
+            "mean": 20.992857142857144,
+            "distribution": {
+              "0": 32,
+              "1": 26,
+              "2": 26,
+              "3": 39,
+              "4": 59,
+              "5": 38,
+              "6": 50,
+              "7": 45,
+              "8": 43,
+              "9": 61,
+              "10": 64,
+              "11": 51,
+              "12": 46,
+              "13": 40,
+              "14": 32,
+              "15": 29,
+              "16": 36,
+              "17": 28,
+              "18": 30,
+              "19": 22,
+              "20": 32,
+              "21": 21,
+              "22": 18,
+              "23": 23,
+              "24": 10,
+              "25": 16,
+              "26": 17,
+              "27": 21,
+              "28": 13,
+              "29": 10,
+              "30": 9,
+              "31": 15,
+              "32": 9,
+              "33": 9,
+              "34": 9,
+              "35": 5,
+              "36": 10,
+              "37": 3,
+              "38": 7,
+              "39": 6,
+              "40": 4,
+              "41": 10,
+              "42": 6,
+              "43": 8,
+              "44": 7,
+              "45": 3,
+              "46": 5,
+              "47": 5,
+              "48": 7,
+              "49": 6,
+              "50": 6,
+              "51": 6,
+              "52": 10,
+              "53": 5,
+              "54": 7,
+              "55": 5,
+              "56": 10,
+              "57": 5,
+              "58": 2,
+              "59": 7,
+              "60": 1,
+              "61": 3,
+              "62": 6,
+              "63": 4,
+              "64": 5,
+              "65": 1,
+              "66": 5,
+              "68": 3,
+              "69": 1,
+              "70": 1,
+              "71": 1,
+              "72": 3,
+              "73": 5,
+              "74": 1,
+              "75": 3,
+              "76": 2,
+              "77": 3,
+              "79": 2,
+              "82": 2,
+              "83": 1,
+              "84": 1,
+              "85": 2,
+              "87": 1,
+              "88": 1,
+              "90": 1,
+              "91": 3,
+              "92": 2,
+              "94": 2,
+              "96": 1,
+              "99": 1,
+              "100": 2,
+              "102": 1,
+              "115": 1,
+              "116": 1,
+              "118": 2,
+              "161": 1
+            }
+          },
+          "top5_frequency": {
+            "users": 1260,
+            "mean": 4.619841269841269,
+            "distribution": {
+              "0": 32,
+              "1": 26,
+              "2": 26,
+              "3": 39,
+              "4": 59,
+              "5": 1078
+            }
+          }
+        }
+      }
+    },
+    "main": {
+      "models": {
+        "recency": {
+          "all": {
+            "all_positive": {
+              "map5": 0.46628321256038646,
+              "candidate_recall_micro": 0.3244574033974373,
+              "candidate_recall_macro_including_empty": 0.4125948280129035,
+              "candidate_map5_ceiling": 0.8144790812141098,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.31416535639412996,
+              "candidate_recall_micro": 0.7633067507418397,
+              "candidate_recall_macro_including_empty": 0.7079573420836751,
+              "candidate_map5_ceiling": 0.7079573420836751,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.5519700176366843,
+              "candidate_recall_micro": 0.32767314773553485,
+              "candidate_recall_macro_including_empty": 0.42156433908694324,
+              "candidate_map5_ceiling": 0.8908201058201058,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.3612266313932981,
+              "candidate_recall_micro": 0.7995004163197336,
+              "candidate_recall_macro_including_empty": 0.7773280423280422,
+              "candidate_map5_ceiling": 0.7773280423280422,
+              "users": 1260
+            }
+          }
+        },
+        "ppr": {
+          "all": {
+            "all_positive": {
+              "map5": 0.48003737125148116,
+              "candidate_recall_micro": 0.3244574033974373,
+              "candidate_recall_macro_including_empty": 0.4125948280129035,
+              "candidate_map5_ceiling": 0.8144790812141098,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.32759547899006475,
+              "candidate_recall_micro": 0.7633067507418397,
+              "candidate_recall_macro_including_empty": 0.7079573420836751,
+              "candidate_map5_ceiling": 0.7079573420836751,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.5672385361552029,
+              "candidate_recall_micro": 0.32767314773553485,
+              "candidate_recall_macro_including_empty": 0.42156433908694324,
+              "candidate_map5_ceiling": 0.8908201058201058,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.37270943562610226,
+              "candidate_recall_micro": 0.7995004163197336,
+              "candidate_recall_macro_including_empty": 0.7773280423280422,
+              "candidate_map5_ceiling": 0.7773280423280422,
+              "users": 1260
+            }
+          }
+        },
+        "hybrid": {
+          "all": {
+            "all_positive": {
+              "map5": 0.48135641691732745,
+              "candidate_recall_micro": 0.3244574033974373,
+              "candidate_recall_macro_including_empty": 0.4125948280129035,
+              "candidate_map5_ceiling": 0.8144790812141098,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.3243602451918695,
+              "candidate_recall_micro": 0.7633067507418397,
+              "candidate_recall_macro_including_empty": 0.7079573420836751,
+              "candidate_map5_ceiling": 0.7079573420836751,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.5683913139329806,
+              "candidate_recall_micro": 0.32767314773553485,
+              "candidate_recall_macro_including_empty": 0.42156433908694324,
+              "candidate_map5_ceiling": 0.8908201058201058,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.36847332451499115,
+              "candidate_recall_micro": 0.7995004163197336,
+              "candidate_recall_macro_including_empty": 0.7773280423280422,
+              "candidate_map5_ceiling": 0.7773280423280422,
+              "users": 1260
+            }
+          }
+        },
+        "existing_lightgbm": {
+          "all": {
+            "all_positive": {
+              "map5": 0.5023077317473338,
+              "candidate_recall_micro": 0.3244574033974373,
+              "candidate_recall_macro_including_empty": 0.4125948280129035,
+              "candidate_map5_ceiling": 0.8144790812141098,
+              "users": 4876
+            },
+            "top5_frequency": {
+              "map5": 0.3455897935466229,
+              "candidate_recall_micro": 0.7633067507418397,
+              "candidate_recall_macro_including_empty": 0.7079573420836751,
+              "candidate_map5_ceiling": 0.7079573420836751,
+              "users": 4876
+            }
+          },
+          "submission": {
+            "all_positive": {
+              "map5": 0.5852727072310405,
+              "candidate_recall_micro": 0.32767314773553485,
+              "candidate_recall_macro_including_empty": 0.42156433908694324,
+              "candidate_map5_ceiling": 0.8908201058201058,
+              "users": 1260
+            },
+            "top5_frequency": {
+              "map5": 0.3904737654320988,
+              "candidate_recall_micro": 0.7995004163197336,
+              "candidate_recall_macro_including_empty": 0.7773280423280422,
+              "candidate_map5_ceiling": 0.7773280423280422,
+              "users": 1260
+            }
+          }
+        }
+      },
+      "target_sizes": {
+        "all": {
+          "all_positive": {
+            "users": 4876,
+            "mean": 28.69749794913864,
+            "distribution": {
+              "0": 264,
+              "1": 155,
+              "2": 147,
+              "3": 132,
+              "4": 167,
+              "5": 154,
+              "6": 173,
+              "7": 157,
+              "8": 165,
+              "9": 150,
+              "10": 145,
+              "11": 123,
+              "12": 135,
+              "13": 122,
+              "14": 122,
+              "15": 86,
+              "16": 87,
+              "17": 116,
+              "18": 91,
+              "19": 68,
+              "20": 68,
+              "21": 66,
+              "22": 84,
+              "23": 63,
+              "24": 56,
+              "25": 61,
+              "26": 57,
+              "27": 66,
+              "28": 55,
+              "29": 49,
+              "30": 50,
+              "31": 54,
+              "32": 53,
+              "33": 38,
+              "34": 36,
+              "35": 33,
+              "36": 37,
+              "37": 28,
+              "38": 36,
+              "39": 32,
+              "40": 26,
+              "41": 31,
+              "42": 26,
+              "43": 28,
+              "44": 29,
+              "45": 15,
+              "46": 29,
+              "47": 29,
+              "48": 19,
+              "49": 29,
+              "50": 20,
+              "51": 21,
+              "52": 19,
+              "53": 20,
+              "54": 17,
+              "55": 11,
+              "56": 12,
+              "57": 12,
+              "58": 15,
+              "59": 11,
+              "60": 8,
+              "61": 18,
+              "62": 10,
+              "63": 10,
+              "64": 15,
+              "65": 18,
+              "66": 13,
+              "67": 10,
+              "68": 17,
+              "69": 10,
+              "70": 13,
+              "71": 6,
+              "72": 18,
+              "73": 16,
+              "74": 11,
+              "75": 9,
+              "76": 10,
+              "77": 11,
+              "78": 13,
+              "79": 4,
+              "80": 10,
+              "81": 8,
+              "82": 5,
+              "83": 10,
+              "84": 6,
+              "85": 6,
+              "86": 6,
+              "87": 7,
+              "88": 7,
+              "89": 10,
+              "90": 6,
+              "91": 8,
+              "92": 7,
+              "93": 8,
+              "94": 11,
+              "95": 8,
+              "96": 9,
+              "97": 9,
+              "98": 7,
+              "99": 13,
+              "100": 2,
+              "101": 5,
+              "102": 4,
+              "103": 9,
+              "104": 3,
+              "105": 5,
+              "106": 9,
+              "107": 4,
+              "108": 3,
+              "109": 4,
+              "110": 6,
+              "111": 4,
+              "112": 3,
+              "113": 9,
+              "114": 6,
+              "115": 6,
+              "116": 4,
+              "117": 7,
+              "118": 2,
+              "119": 1,
+              "120": 2,
+              "121": 7,
+              "122": 4,
+              "123": 3,
+              "124": 2,
+              "125": 5,
+              "126": 5,
+              "127": 2,
+              "128": 3,
+              "129": 4,
+              "130": 5,
+              "131": 5,
+              "132": 2,
+              "133": 6,
+              "134": 3,
+              "135": 5,
+              "136": 6,
+              "137": 1,
+              "138": 2,
+              "139": 4,
+              "140": 2,
+              "141": 4,
+              "144": 1,
+              "145": 8,
+              "147": 2,
+              "148": 1,
+              "149": 4,
+              "150": 6,
+              "151": 3,
+              "152": 3,
+              "153": 2,
+              "154": 2,
+              "155": 1,
+              "156": 3,
+              "157": 3,
+              "158": 2,
+              "159": 4,
+              "160": 2,
+              "161": 3,
+              "162": 2,
+              "164": 1,
+              "165": 2,
+              "166": 1,
+              "167": 3,
+              "168": 1,
+              "169": 1,
+              "172": 1,
+              "173": 3,
+              "174": 4,
+              "178": 2,
+              "180": 2,
+              "181": 1,
+              "182": 1,
+              "183": 2,
+              "184": 1,
+              "185": 1,
+              "186": 1,
+              "187": 1,
+              "191": 1,
+              "193": 1,
+              "196": 1,
+              "197": 1,
+              "199": 1,
+              "202": 1,
+              "206": 1,
+              "210": 1,
+              "226": 1,
+              "236": 1,
+              "241": 2,
+              "244": 1,
+              "252": 1,
+              "268": 1,
+              "284": 1
+            }
+          },
+          "top5_frequency": {
+            "users": 4876,
+            "mean": 4.423297785069729,
+            "distribution": {
+              "0": 264,
+              "1": 155,
+              "2": 147,
+              "3": 132,
+              "4": 167,
+              "5": 4011
+            }
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "users": 1260,
+            "mean": 33.83888888888889,
+            "distribution": {
+              "0": 22,
+              "1": 17,
+              "2": 15,
+              "3": 16,
+              "4": 40,
+              "5": 19,
+              "6": 38,
+              "7": 26,
+              "8": 34,
+              "9": 38,
+              "10": 39,
+              "11": 41,
+              "12": 36,
+              "13": 39,
+              "14": 41,
+              "15": 18,
+              "16": 24,
+              "17": 30,
+              "18": 32,
+              "19": 23,
+              "20": 22,
+              "21": 20,
+              "22": 35,
+              "23": 21,
+              "24": 18,
+              "25": 12,
+              "26": 26,
+              "27": 25,
+              "28": 18,
+              "29": 19,
+              "30": 14,
+              "31": 21,
+              "32": 19,
+              "33": 13,
+              "34": 13,
+              "35": 11,
+              "36": 14,
+              "37": 8,
+              "38": 9,
+              "39": 9,
+              "40": 10,
+              "41": 15,
+              "42": 11,
+              "43": 12,
+              "44": 12,
+              "45": 7,
+              "46": 8,
+              "47": 7,
+              "48": 9,
+              "49": 7,
+              "50": 1,
+              "51": 8,
+              "52": 3,
+              "53": 3,
+              "54": 5,
+              "55": 7,
+              "56": 3,
+              "57": 2,
+              "58": 4,
+              "59": 3,
+              "60": 3,
+              "61": 6,
+              "62": 2,
+              "63": 3,
+              "64": 2,
+              "65": 4,
+              "66": 4,
+              "67": 1,
+              "68": 4,
+              "69": 1,
+              "70": 3,
+              "71": 1,
+              "72": 3,
+              "73": 4,
+              "74": 4,
+              "75": 3,
+              "76": 2,
+              "77": 3,
+              "78": 3,
+              "81": 1,
+              "82": 1,
+              "83": 3,
+              "84": 2,
+              "85": 4,
+              "86": 2,
+              "87": 3,
+              "88": 2,
+              "89": 4,
+              "90": 1,
+              "91": 2,
+              "92": 1,
+              "93": 2,
+              "94": 3,
+              "95": 1,
+              "96": 2,
+              "97": 1,
+              "98": 1,
+              "99": 2,
+              "101": 2,
+              "102": 3,
+              "103": 1,
+              "104": 1,
+              "105": 1,
+              "106": 3,
+              "107": 1,
+              "108": 2,
+              "109": 1,
+              "110": 1,
+              "111": 1,
+              "113": 2,
+              "114": 2,
+              "115": 1,
+              "116": 2,
+              "117": 2,
+              "118": 2,
+              "120": 1,
+              "122": 3,
+              "123": 1,
+              "124": 1,
+              "125": 2,
+              "126": 2,
+              "127": 1,
+              "128": 1,
+              "129": 1,
+              "131": 1,
+              "133": 1,
+              "134": 1,
+              "135": 1,
+              "136": 2,
+              "138": 1,
+              "139": 1,
+              "140": 1,
+              "141": 2,
+              "144": 1,
+              "145": 4,
+              "147": 1,
+              "149": 1,
+              "150": 1,
+              "151": 2,
+              "152": 1,
+              "154": 1,
+              "155": 1,
+              "156": 1,
+              "157": 2,
+              "158": 2,
+              "159": 2,
+              "160": 1,
+              "161": 2,
+              "162": 1,
+              "166": 1,
+              "167": 1,
+              "168": 1,
+              "172": 1,
+              "173": 1,
+              "174": 3,
+              "185": 1,
+              "186": 1,
+              "187": 1,
+              "193": 1,
+              "196": 1,
+              "197": 1,
+              "236": 1,
+              "241": 1,
+              "244": 1,
+              "284": 1
+            }
+          },
+          "top5_frequency": {
+            "users": 1260,
+            "mean": 4.765873015873016,
+            "distribution": {
+              "0": 22,
+              "1": 17,
+              "2": 15,
+              "3": 16,
+              "4": 40,
+              "5": 1150
+            }
+          }
+        }
+      }
+    }
+  },
+  "results": {
+    "short": {
+      "recency": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3149919674596664,
+            "candidate_recall_micro": 0.38148618470026713,
+            "candidate_recall_macro_including_empty": 0.35407752834575235,
+            "candidate_map5_ceiling": 0.5760151763740772,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.23240719852337982,
+            "candidate_recall_micro": 0.7747994789881402,
+            "candidate_recall_macro_including_empty": 0.5193293683347006,
+            "candidate_map5_ceiling": 0.5193293683347006,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3710050705467372,
+            "candidate_recall_micro": 0.3929397863226823,
+            "candidate_recall_macro_including_empty": 0.39719007571031467,
+            "candidate_map5_ceiling": 0.6573544973544974,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.2708013668430335,
+            "candidate_recall_micro": 0.8049521139920579,
+            "candidate_recall_macro_including_empty": 0.597037037037037,
+            "candidate_map5_ceiling": 0.597037037037037,
+            "users": 1260
+          }
+        }
+      },
+      "ppr": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3201143924892899,
+            "candidate_recall_micro": 0.38148618470026713,
+            "candidate_recall_macro_including_empty": 0.35407752834575235,
+            "candidate_map5_ceiling": 0.5760151763740772,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.23658759456749612,
+            "candidate_recall_micro": 0.7747994789881402,
+            "candidate_recall_macro_including_empty": 0.5193293683347006,
+            "candidate_map5_ceiling": 0.5193293683347006,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3769402557319224,
+            "candidate_recall_micro": 0.3929397863226823,
+            "candidate_recall_macro_including_empty": 0.39719007571031467,
+            "candidate_map5_ceiling": 0.6573544973544974,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.2752630070546737,
+            "candidate_recall_micro": 0.8049521139920579,
+            "candidate_recall_macro_including_empty": 0.597037037037037,
+            "candidate_map5_ceiling": 0.597037037037037,
+            "users": 1260
+          }
+        }
+      },
+      "hybrid": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3175546896363139,
+            "candidate_recall_micro": 0.38148618470026713,
+            "candidate_recall_macro_including_empty": 0.35407752834575235,
+            "candidate_map5_ceiling": 0.5760151763740772,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.23284659557013948,
+            "candidate_recall_micro": 0.7747994789881402,
+            "candidate_recall_macro_including_empty": 0.5193293683347006,
+            "candidate_map5_ceiling": 0.5193293683347006,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.37427425044091706,
+            "candidate_recall_micro": 0.3929397863226823,
+            "candidate_recall_macro_including_empty": 0.39719007571031467,
+            "candidate_map5_ceiling": 0.6573544973544974,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.2712504409171076,
+            "candidate_recall_micro": 0.8049521139920579,
+            "candidate_recall_macro_including_empty": 0.597037037037037,
+            "candidate_map5_ceiling": 0.597037037037037,
+            "users": 1260
+          }
+        }
+      },
+      "existing_lightgbm": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3356994576611066,
+            "candidate_recall_micro": 0.38148618470026713,
+            "candidate_recall_macro_including_empty": 0.35407752834575235,
+            "candidate_map5_ceiling": 0.5760151763740772,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.24879284021511255,
+            "candidate_recall_micro": 0.7747994789881402,
+            "candidate_recall_macro_including_empty": 0.5193293683347006,
+            "candidate_map5_ceiling": 0.5193293683347006,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3945623897707231,
+            "candidate_recall_micro": 0.3929397863226823,
+            "candidate_recall_macro_including_empty": 0.39719007571031467,
+            "candidate_map5_ceiling": 0.6573544973544974,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.2897264109347442,
+            "candidate_recall_micro": 0.8049521139920579,
+            "candidate_recall_macro_including_empty": 0.597037037037037,
+            "candidate_map5_ceiling": 0.597037037037037,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_personal": {
+        "all": {
+          "all_positive": {
+            "map5": 0.33388780648983685,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.24988110700938837,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3948661816578483,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.294001102292769,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_balanced": {
+        "all": {
+          "all_positive": {
+            "map5": 0.335918501048218,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.24991084449913406,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3954614197530864,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.2930513668430335,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_collaborative": {
+        "all": {
+          "all_positive": {
+            "map5": 0.33344077568134173,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.24624225230152216,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3907969576719577,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.28693716931216934,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_personal": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3332620659010117,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.2500456316652994,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3913152557319224,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.2930930335097002,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_balanced": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3348128019323672,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.24993175189134995,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3924446649029983,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.29234149029982365,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_collaborative": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3330386929176921,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.24653404429860545,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.38915542328042324,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.28557605820105825,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "A_lightgbm": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3489025043295962,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.2617702921338073,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4083827160493827,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.30419488536155204,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "B_rank_0.2": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3487170153130982,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.26158822121957886,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4086353615520282,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.30421472663139326,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "B_rank_0.5": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3466587480630754,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.2593822919515085,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.40437433862433864,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.30113624338624345,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "B_exponential_0.2": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3489123028894358,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.2620911380001823,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.40760229276895943,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3039753086419753,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      },
+      "B_exponential_0.5": {
+        "all": {
+          "all_positive": {
+            "map5": 0.34901279509616256,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.26196740269802204,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.40735273368606706,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3038289241622575,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      }
+    },
+    "late": {
+      "recency": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3872749179655456,
+            "candidate_recall_micro": 0.3913229678447794,
+            "candidate_recall_macro_including_empty": 0.44671818949849346,
+            "candidate_map5_ceiling": 0.7644790812141099,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.2828491591468417,
+            "candidate_recall_micro": 0.7452825564867912,
+            "candidate_recall_macro_including_empty": 0.6727235438884331,
+            "candidate_map5_ceiling": 0.6727235438884331,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.46213161375661377,
+            "candidate_recall_micro": 0.39223469812105405,
+            "candidate_recall_macro_including_empty": 0.4625327518100396,
+            "candidate_map5_ceiling": 0.8428042328042329,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.32782473544973545,
+            "candidate_recall_micro": 0.7715169214911527,
+            "candidate_recall_macro_including_empty": 0.7386772486772487,
+            "candidate_map5_ceiling": 0.7386772486772487,
+            "users": 1260
+          }
+        }
+      },
+      "ppr": {
+        "all": {
+          "all_positive": {
+            "map5": 0.39224688952693465,
+            "candidate_recall_micro": 0.3913229678447794,
+            "candidate_recall_macro_including_empty": 0.44671818949849346,
+            "candidate_map5_ceiling": 0.7644790812141099,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.28838648482362594,
+            "candidate_recall_micro": 0.7452825564867912,
+            "candidate_recall_macro_including_empty": 0.6727235438884331,
+            "candidate_map5_ceiling": 0.6727235438884331,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.46656040564373896,
+            "candidate_recall_micro": 0.39223469812105405,
+            "candidate_recall_macro_including_empty": 0.4625327518100396,
+            "candidate_map5_ceiling": 0.8428042328042329,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3296635802469136,
+            "candidate_recall_micro": 0.7715169214911527,
+            "candidate_recall_macro_including_empty": 0.7386772486772487,
+            "candidate_map5_ceiling": 0.7386772486772487,
+            "users": 1260
+          }
+        }
+      },
+      "hybrid": {
+        "all": {
+          "all_positive": {
+            "map5": 0.39124304985871844,
+            "candidate_recall_micro": 0.3913229678447794,
+            "candidate_recall_macro_including_empty": 0.44671818949849346,
+            "candidate_map5_ceiling": 0.7644790812141099,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.2852572691641601,
+            "candidate_recall_micro": 0.7452825564867912,
+            "candidate_recall_macro_including_empty": 0.6727235438884331,
+            "candidate_map5_ceiling": 0.6727235438884331,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4652111992945326,
+            "candidate_recall_micro": 0.39223469812105405,
+            "candidate_recall_macro_including_empty": 0.4625327518100396,
+            "candidate_map5_ceiling": 0.8428042328042329,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.326129188712522,
+            "candidate_recall_micro": 0.7715169214911527,
+            "candidate_recall_macro_including_empty": 0.7386772486772487,
+            "candidate_map5_ceiling": 0.7386772486772487,
+            "users": 1260
+          }
+        }
+      },
+      "existing_lightgbm": {
+        "all": {
+          "all_positive": {
+            "map5": 0.41272787348464124,
+            "candidate_recall_micro": 0.3913229678447794,
+            "candidate_recall_macro_including_empty": 0.44671818949849346,
+            "candidate_map5_ceiling": 0.7644790812141099,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.30527641053686994,
+            "candidate_recall_micro": 0.7452825564867912,
+            "candidate_recall_macro_including_empty": 0.6727235438884331,
+            "candidate_map5_ceiling": 0.6727235438884331,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4905432098765432,
+            "candidate_recall_micro": 0.39223469812105405,
+            "candidate_recall_macro_including_empty": 0.4625327518100396,
+            "candidate_map5_ceiling": 0.8428042328042329,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.34847971781305115,
+            "candidate_recall_micro": 0.7715169214911527,
+            "candidate_recall_macro_including_empty": 0.7386772486772487,
+            "candidate_map5_ceiling": 0.7386772486772487,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_personal": {
+        "all": {
+          "all_positive": {
+            "map5": 0.40815940889618085,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3037678311001732,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.48706966490299813,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.35069135802469137,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_balanced": {
+        "all": {
+          "all_positive": {
+            "map5": 0.4101089235256586,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.30396385926533587,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4913659611992945,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.353799823633157,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_collaborative": {
+        "all": {
+          "all_positive": {
+            "map5": 0.4082600720080212,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3013958390301705,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4882502204585539,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3486364638447972,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_personal": {
+        "all": {
+          "all_positive": {
+            "map5": 0.40777276456111566,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3050505879135904,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.48883796296296295,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.352364417989418,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_balanced": {
+        "all": {
+          "all_positive": {
+            "map5": 0.40992639686446086,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.304925029623553,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.49256790123456784,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.35411022927689595,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_collaborative": {
+        "all": {
+          "all_positive": {
+            "map5": 0.4078834541062802,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3017568475982135,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4892094356261023,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.34944223985890654,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "A_lightgbm": {
+        "all": {
+          "all_positive": {
+            "map5": 0.42489255765199163,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.31839816333971377,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5035939153439153,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.36503042328042334,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "B_rank_0.2": {
+        "all": {
+          "all_positive": {
+            "map5": 0.42447725822623283,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.31794731565035095,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.503438492063492,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3652400793650794,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "B_rank_0.5": {
+        "all": {
+          "all_positive": {
+            "map5": 0.4224185352292407,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.31573819615349563,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5033992504409172,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.36425639329806,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "B_exponential_0.2": {
+        "all": {
+          "all_positive": {
+            "map5": 0.42461899553367977,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.31823398049402973,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5038150352733687,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3652647707231041,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      },
+      "B_exponential_0.5": {
+        "all": {
+          "all_positive": {
+            "map5": 0.424541290675417,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.31809406617445996,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5026915784832452,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.36446141975308644,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      }
+    },
+    "main": {
+      "recency": {
+        "all": {
+          "all_positive": {
+            "map5": 0.46628321256038646,
+            "candidate_recall_micro": 0.3244574033974373,
+            "candidate_recall_macro_including_empty": 0.4125948280129035,
+            "candidate_map5_ceiling": 0.8144790812141098,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.31416535639412996,
+            "candidate_recall_micro": 0.7633067507418397,
+            "candidate_recall_macro_including_empty": 0.7079573420836751,
+            "candidate_map5_ceiling": 0.7079573420836751,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5519700176366843,
+            "candidate_recall_micro": 0.32767314773553485,
+            "candidate_recall_macro_including_empty": 0.42156433908694324,
+            "candidate_map5_ceiling": 0.8908201058201058,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3612266313932981,
+            "candidate_recall_micro": 0.7995004163197336,
+            "candidate_recall_macro_including_empty": 0.7773280423280422,
+            "candidate_map5_ceiling": 0.7773280423280422,
+            "users": 1260
+          }
+        }
+      },
+      "ppr": {
+        "all": {
+          "all_positive": {
+            "map5": 0.48003737125148116,
+            "candidate_recall_micro": 0.3244574033974373,
+            "candidate_recall_macro_including_empty": 0.4125948280129035,
+            "candidate_map5_ceiling": 0.8144790812141098,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.32759547899006475,
+            "candidate_recall_micro": 0.7633067507418397,
+            "candidate_recall_macro_including_empty": 0.7079573420836751,
+            "candidate_map5_ceiling": 0.7079573420836751,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5672385361552029,
+            "candidate_recall_micro": 0.32767314773553485,
+            "candidate_recall_macro_including_empty": 0.42156433908694324,
+            "candidate_map5_ceiling": 0.8908201058201058,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.37270943562610226,
+            "candidate_recall_micro": 0.7995004163197336,
+            "candidate_recall_macro_including_empty": 0.7773280423280422,
+            "candidate_map5_ceiling": 0.7773280423280422,
+            "users": 1260
+          }
+        }
+      },
+      "hybrid": {
+        "all": {
+          "all_positive": {
+            "map5": 0.48135641691732745,
+            "candidate_recall_micro": 0.3244574033974373,
+            "candidate_recall_macro_including_empty": 0.4125948280129035,
+            "candidate_map5_ceiling": 0.8144790812141098,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3243602451918695,
+            "candidate_recall_micro": 0.7633067507418397,
+            "candidate_recall_macro_including_empty": 0.7079573420836751,
+            "candidate_map5_ceiling": 0.7079573420836751,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5683913139329806,
+            "candidate_recall_micro": 0.32767314773553485,
+            "candidate_recall_macro_including_empty": 0.42156433908694324,
+            "candidate_map5_ceiling": 0.8908201058201058,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.36847332451499115,
+            "candidate_recall_micro": 0.7995004163197336,
+            "candidate_recall_macro_including_empty": 0.7773280423280422,
+            "candidate_map5_ceiling": 0.7773280423280422,
+            "users": 1260
+          }
+        }
+      },
+      "existing_lightgbm": {
+        "all": {
+          "all_positive": {
+            "map5": 0.5023077317473338,
+            "candidate_recall_micro": 0.3244574033974373,
+            "candidate_recall_macro_including_empty": 0.4125948280129035,
+            "candidate_map5_ceiling": 0.8144790812141098,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3455897935466229,
+            "candidate_recall_micro": 0.7633067507418397,
+            "candidate_recall_macro_including_empty": 0.7079573420836751,
+            "candidate_map5_ceiling": 0.7079573420836751,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5852727072310405,
+            "candidate_recall_micro": 0.32767314773553485,
+            "candidate_recall_macro_including_empty": 0.42156433908694324,
+            "candidate_map5_ceiling": 0.8908201058201058,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3904737654320988,
+            "candidate_recall_micro": 0.7995004163197336,
+            "candidate_recall_macro_including_empty": 0.7773280423280422,
+            "candidate_map5_ceiling": 0.7773280423280422,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_personal": {
+        "all": {
+          "all_positive": {
+            "map5": 0.49435403563941305,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3439281400966183,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5820989858906526,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3970672398589066,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_balanced": {
+        "all": {
+          "all_positive": {
+            "map5": 0.49832336386838033,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3436904680521375,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5870063932980598,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.39520216049382717,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_10_collaborative": {
+        "all": {
+          "all_positive": {
+            "map5": 0.49856690365509065,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3408522468325586,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5844221781305113,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.38901477072310403,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_personal": {
+        "all": {
+          "all_positive": {
+            "map5": 0.4944142512077294,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.34578217573603137,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5830268959435626,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.39869885361552027,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_balanced": {
+        "all": {
+          "all_positive": {
+            "map5": 0.49872647206271076,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3470078502415459,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.588238315696649,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.4004129188712522,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "anchor_80_collaborative": {
+        "all": {
+          "all_positive": {
+            "map5": 0.49871809771215025,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.34313565308540694,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5863461199294532,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3924069664902998,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "A_lightgbm": {
+        "all": {
+          "all_positive": {
+            "map5": 0.5199981200437517,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.36357140415641237,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.6035418871252205,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.412108024691358,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "B_rank_0.2": {
+        "all": {
+          "all_positive": {
+            "map5": 0.5191360176829825,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.36285354571142103,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.602788139329806,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.4114574514991181,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "B_rank_0.5": {
+        "all": {
+          "all_positive": {
+            "map5": 0.5147408508795916,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3582478238082217,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.6007663139329805,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.4080467372134039,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "B_exponential_0.2": {
+        "all": {
+          "all_positive": {
+            "map5": 0.5199844476346732,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3635502119223407,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.6032938712522046,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.4117885802469136,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      },
+      "B_exponential_0.5": {
+        "all": {
+          "all_positive": {
+            "map5": 0.5192657346641145,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3629155842676146,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.6022671957671958,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.4108333333333334,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      }
+    }
+  },
+  "candidate_recall": {
+    "short": {
+      "before": {
+        "all": {
+          "all_positive": {
+            "map5": 0.3356994576611066,
+            "candidate_recall_micro": 0.38148618470026713,
+            "candidate_recall_macro_including_empty": 0.35407752834575235,
+            "candidate_map5_ceiling": 0.5760151763740772,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.24879284021511255,
+            "candidate_recall_micro": 0.7747994789881402,
+            "candidate_recall_macro_including_empty": 0.5193293683347006,
+            "candidate_map5_ceiling": 0.5193293683347006,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3945623897707231,
+            "candidate_recall_micro": 0.3929397863226823,
+            "candidate_recall_macro_including_empty": 0.39719007571031467,
+            "candidate_map5_ceiling": 0.6573544973544974,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.2897264109347442,
+            "candidate_recall_micro": 0.8049521139920579,
+            "candidate_recall_macro_including_empty": 0.597037037037037,
+            "candidate_map5_ceiling": 0.597037037037037,
+            "users": 1260
+          }
+        }
+      },
+      "after": {
+        "all": {
+          "all_positive": {
+            "map5": 0.335918501048218,
+            "candidate_recall_micro": 0.5117718322605129,
+            "candidate_recall_macro_including_empty": 0.43193474593014,
+            "candidate_map5_ceiling": 0.6113822805578343,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.24991084449913406,
+            "candidate_recall_micro": 0.8571330636868445,
+            "candidate_recall_macro_including_empty": 0.5770508613617719,
+            "candidate_map5_ceiling": 0.5770508613617719,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.3954614197530864,
+            "candidate_recall_micro": 0.5110038895179951,
+            "candidate_recall_macro_including_empty": 0.4775678280335274,
+            "candidate_map5_ceiling": 0.6896296296296297,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.2930513668430335,
+            "candidate_recall_micro": 0.8752627890679747,
+            "candidate_recall_macro_including_empty": 0.652010582010582,
+            "candidate_map5_ceiling": 0.652010582010582,
+            "users": 1260
+          }
+        }
+      }
+    },
+    "late": {
+      "before": {
+        "all": {
+          "all_positive": {
+            "map5": 0.41272787348464124,
+            "candidate_recall_micro": 0.3913229678447794,
+            "candidate_recall_macro_including_empty": 0.44671818949849346,
+            "candidate_map5_ceiling": 0.7644790812141099,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.30527641053686994,
+            "candidate_recall_micro": 0.7452825564867912,
+            "candidate_recall_macro_including_empty": 0.6727235438884331,
+            "candidate_map5_ceiling": 0.6727235438884331,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4905432098765432,
+            "candidate_recall_micro": 0.39223469812105405,
+            "candidate_recall_macro_including_empty": 0.4625327518100396,
+            "candidate_map5_ceiling": 0.8428042328042329,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.34847971781305115,
+            "candidate_recall_micro": 0.7715169214911527,
+            "candidate_recall_macro_including_empty": 0.7386772486772487,
+            "candidate_map5_ceiling": 0.7386772486772487,
+            "users": 1260
+          }
+        }
+      },
+      "after": {
+        "all": {
+          "all_positive": {
+            "map5": 0.4101089235256586,
+            "candidate_recall_micro": 0.5131630601586943,
+            "candidate_recall_macro_including_empty": 0.5433934708256628,
+            "candidate_map5_ceiling": 0.8073147388569866,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.30396385926533587,
+            "candidate_recall_micro": 0.8344851247365583,
+            "candidate_recall_macro_including_empty": 0.7529258955427945,
+            "candidate_map5_ceiling": 0.7529258955427945,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.4913659611992945,
+            "candidate_recall_micro": 0.5090166723375298,
+            "candidate_recall_macro_including_empty": 0.5675669078274643,
+            "candidate_map5_ceiling": 0.8868915343915345,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.353799823633157,
+            "candidate_recall_micro": 0.8605050678577564,
+            "candidate_recall_macro_including_empty": 0.8251455026455027,
+            "candidate_map5_ceiling": 0.8251455026455027,
+            "users": 1260
+          }
+        }
+      }
+    },
+    "main": {
+      "before": {
+        "all": {
+          "all_positive": {
+            "map5": 0.5023077317473338,
+            "candidate_recall_micro": 0.3244574033974373,
+            "candidate_recall_macro_including_empty": 0.4125948280129035,
+            "candidate_map5_ceiling": 0.8144790812141098,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3455897935466229,
+            "candidate_recall_micro": 0.7633067507418397,
+            "candidate_recall_macro_including_empty": 0.7079573420836751,
+            "candidate_map5_ceiling": 0.7079573420836751,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5852727072310405,
+            "candidate_recall_micro": 0.32767314773553485,
+            "candidate_recall_macro_including_empty": 0.42156433908694324,
+            "candidate_map5_ceiling": 0.8908201058201058,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.3904737654320988,
+            "candidate_recall_micro": 0.7995004163197336,
+            "candidate_recall_macro_including_empty": 0.7773280423280422,
+            "candidate_map5_ceiling": 0.7773280423280422,
+            "users": 1260
+          }
+        }
+      },
+      "after": {
+        "all": {
+          "all_positive": {
+            "map5": 0.49832336386838033,
+            "candidate_recall_micro": 0.43205482780552995,
+            "candidate_recall_macro_including_empty": 0.5086680474255204,
+            "candidate_map5_ceiling": 0.851097210828548,
+            "users": 4876
+          },
+          "top5_frequency": {
+            "map5": 0.3436904680521375,
+            "candidate_recall_micro": 0.8498238130563798,
+            "candidate_recall_macro_including_empty": 0.7890381460213289,
+            "candidate_map5_ceiling": 0.7890381460213289,
+            "users": 4876
+          }
+        },
+        "submission": {
+          "all_positive": {
+            "map5": 0.5870063932980598,
+            "candidate_recall_micro": 0.4275394610314985,
+            "candidate_recall_macro_including_empty": 0.5158428110722456,
+            "candidate_map5_ceiling": 0.9184920634920636,
+            "users": 1260
+          },
+          "top5_frequency": {
+            "map5": 0.39520216049382717,
+            "candidate_recall_micro": 0.8769358867610325,
+            "candidate_recall_macro_including_empty": 0.8518253968253969,
+            "candidate_map5_ceiling": 0.8518253968253969,
+            "users": 1260
+          }
+        }
+      }
+    }
+  },
+  "windows": {
+    "short": {
+      "history_start": "2020-03-08 22:00:00+00:00",
+      "cutoff": "2020-05-17 21:00:00+00:00",
+      "target_end_exclusive": "2020-06-21 21:00:00+00:00",
+      "ranker_training_snapshots": [
+        "early"
+      ]
+    },
+    "late": {
+      "history_start": "2020-03-08 22:00:00+00:00",
+      "cutoff": "2020-06-21 21:00:00+00:00",
+      "target_end_exclusive": "2020-07-26 21:00:00+00:00",
+      "ranker_training_snapshots": [
+        "early",
+        "short"
+      ]
+    },
+    "main": {
+      "history_start": "2020-03-08 22:00:00+00:00",
+      "cutoff": "2020-05-17 21:00:00+00:00",
+      "target_end_exclusive": "2020-07-26 21:00:00+00:00",
+      "ranker_training_snapshots": [
+        "early"
+      ]
+    }
+  },
+  "before_training_completed_msk": "2026-10-24T17:38:10.386851+03:00",
+  "selected_anchor": {
+    "name": "anchor_10_balanced",
+    "smoothing": 10,
+    "variant": "balanced",
+    "consistent_options": [
+      "anchor_10_personal",
+      "anchor_10_balanced",
+      "anchor_10_collaborative",
+      "anchor_80_personal",
+      "anchor_80_balanced",
+      "anchor_80_collaborative"
+    ]
+  },
+  "selection": {
+    "objective": "B_rank_0.2",
+    "anchor": "anchor_10_balanced",
+    "consistent_options": [
+      "anchor_10_balanced",
+      "A_lightgbm",
+      "B_rank_0.2",
+      "B_rank_0.5",
+      "B_exponential_0.2",
+      "B_exponential_0.5"
+    ],
+    "two_nonoverlapping_windows_only": true,
+    "main_diagnostic_not_used_for_selection": true
+  },
+  "completed_msk": "2026-10-24T17:40:40.752419+03:00",
+  "completion_checks": {
+    "verified_msk": "2026-10-24T17:45:24.936550+03:00",
+    "tests_passed": 139,
+    "test_failures": 0,
+    "test_errors": 0,
+    "test_warnings": 42,
+    "full_test_log": "evidence/phase08_tests.log",
+    "full_test_junit": "evidence/phase08_tests.xml",
+    "relevant_test_log": "evidence/phase08_relevant_tests.log",
+    "independent_csv_validation_passed": true,
+    "independent_validator_command": "./venv/bin/python scripts/validate_submission.py outputs/submission_objective_v5.csv outputs/submission_anchor_v5.csv",
+    "saved_model_replay_matches_both_csvs": true,
+    "two_independent_model_predictions_bit_identical": true,
+    "target_distribution_totals_and_fixed_denominators_verified": true,
+    "model_sha256": "08c91dee80461a4682b2066c9eb0f4215b42c9b837d21c120a748b63c2e488db",
+    "all_preexisting_protected_artifact_hashes_rechecked": true
+  },
+  "code_changes": {
+    "src/objective_alignment.py": "Independent airing-fragment union, window coverage, distinct-frequency Top5 hypothesis, strength counters, smoothed exposure, top80 cosine neighbors, 220-candidate union, standalone anchors and stable blends",
+    "scripts/phase08_align.py": "Pre-training rescoring, dual-target and dual-cohort metrics, two disjoint chronological backtests, bounded selection, isolated Top5 LambdaRank refit, protected artifacts and validated exports",
+    "tests/test_phase08_objective.py": "Eight regression tests: overlap union, cutoff isolation, frequency ties, empty users, weak signals, exposure arithmetic, cosine normalization, score stability and row/label/group alignment"
+  },
+  "interpretation": {
+    "main_submission_mean_positive_programmes_old_top5": [33.83888888888889, 4.765873015873016],
+    "same_saved_lightgbm_predictions_main_submission_map_old_top5": [0.5852727072310405, 0.3904737654320988],
+    "conclusion": "The all-positive metric is substantially more optimistic for the hypothesized Top5-frequency task. This magnitude supports objective mismatch as a plausible explanation, not confirmation of Kaggle semantics or expected Kaggle improvement.",
+    "candidate_stop": "The single 220-candidate pool raises main Top5 pair recall from 79.95% to 87.69%; no further expansion was attempted.",
+    "strength_transform": "Raw airing counters are computed first; count/seconds features use log1p and Float32 in the ranker. Weaker watches are never positive labels.",
+    "selection_tradeoff": "The 20% rank-normalized anchor blend slightly improves both short backtests versus A; A remains stronger on the long main diagnostic. Blend gains are small and may be noisy."
+  },
+  "csv_checks": {
+    "outputs/submission_objective_v5.csv": {
+      "valid": true,
+      "rows": 1260,
+      "exact_user_order": true,
+      "eligible_programmes": 6636,
+      "sha256": "cf6c43b8e04f7a2e3d8e3110d7fb8fc295c8fd3e4d71dd63460c0dc86eb0def5"
+    },
+    "outputs/submission_anchor_v5.csv": {
+      "valid": true,
+      "rows": 1260,
+      "exact_user_order": true,
+      "eligible_programmes": 6636,
+      "sha256": "1cf9f83b1fda529c816d3169ae3576f2dc23026c0425c044c3aff85fad56177a"
+    }
+  },
+  "deterministic_predictions": true,
+  "protected_artifacts_unchanged": true,
+  "protected_sha256": {
+    "outputs/phase06_context_v2.txt": "8ce74504492279f47123c0e83e190eaab96bd8c442e6093c12a40d4c9a2d9cb3",
+    "outputs/submission_adaptive_v2_preserved_0e40d661a807.csv": "0e40d661a8079064aff8fd5ccccaa5dd9ebc44e8cc7f1737451855e0d4059037",
+    "outputs/submission_best_preserved_498f26f9ebe2.csv": "498f26f9ebe2fa790c0fe117a4945c05ab3ac95d18f877df1d6019b744ac24ea",
+    "outputs/phase05_ranker_full_history.txt": "f72057bf7a3c79b97da5d1038b807f001c3d792ad2c831d9dce32afc401f97b7",
+    "outputs/phase05_ranker.txt": "ebcf091b4a677686a47098d5b77efec549e3fffe1ede8a5f116b90f51b50e941",
+    "outputs/phase06_adaptive_calibrator.joblib": "f74bd8b5d21300b01a82e8a6a14279d0ef62f33a27122471554d2fe27896d35d",
+    "outputs/submission_best.csv": "e4ea08bbf34281b518e3c66fab0aebd5e80965f477d0eb8ff31724fbd4994262",
+    "outputs/submission_context_v2.csv": "0e40d661a8079064aff8fd5ccccaa5dd9ebc44e8cc7f1737451855e0d4059037",
+    "outputs/submission_recency30_backup.csv": "d14a289fc682727dffacba8a8d12fb35dc320eff7510d163c6f54e49f85d2ab1",
+    "outputs/submission_adaptive_v2.csv": "3208be6189cf18c31e1e9d6c98da70941df38867e01c4d78f4a0df9be52a8411",
+    "evidence/phase05_ppr.json": "43909e05dd369e6a16069f9854f22bdb354ba0ebcce25c2b8441adbab7c2fce4",
+    "evidence/phase03_baselines.json": "e0500c31b59b60dfadd4d0618042357d9cdf4158adca52b02617419f7774470d",
+    "evidence/phase04_verified_baselines.json": "9fea68bc0b6616e5ed0e3fa09e3deba5023476fef8e96fd7ff21786f84e8a1be",
+    "evidence/phase02_checks.json": "a39f95120fb0cfb0055d2fb3258ace7469ca997a35eefca90f8e37bc74a9409e",
+    "evidence/phase02_2_checks.json": "a48da174414537210a30782e3870ccccf8706faed3563eb518934aa76a3c6718",
+    "evidence/phase05_tests.xml": "714f84f96f8be9fb516a6065614f269e7daaf6e39eac5809cc87341ed1cc1533",
+    "evidence/phase06_tests.log": "40d6c899bf182c2ea3930e3bdab85dc4f77f62d6592fbb7eadf27850c56eba0e",
+    "evidence/phase05_final_selection.json": "20341a2904504e6edf9a4ef1aef445a9503ae51323917ec2223aacfb8b3ec3e5",
+    "evidence/phase02_1_checks.json": "e313df8cfa0886f8208ffc0edb365d32035304f5d3a3ef4f8bdc165da7e808cb",
+    "evidence/phase04_cbf.json": "51d19669beb8641f03ea77ad0b4d9f5372ddced16a1099a793ebdbab134645da",
+    "evidence/phase05_tests.log": "9f9449c87dae282a4d554e195b8130fa430e12e39686b54dfc0355febcb2afce",
+    "evidence/phase06_tests.xml": "2e6e1016a7040256f7f3399ad716253cd6f5b3408ac1a56ab6b788ea22d504bc",
+    "evidence/phase05_execution.log": "e9411200e4e818783130e61d08fc98ff1c85452f156e71644b92621ffda3ecfb",
+    "evidence/phase05_optimization.json": "3f362ce59b6c364557667120ee69a8ad310ad0d137d97c9184c4673e1d0fd031",
+    "evidence/phase03_1_corrected_baselines.json": "a524bbf257c6132e001616355d080beece813e08b22600fabb9dcc05b0fe2cfa",
+    "evidence/phase06_attempt01.log": "fc00665a744db4cad145e4093b01b811979b06cb21a1a0d3929138dc846f59ee",
+    "evidence/phase06_execution.log": "3581ccc671d8b222b15ba932c6db29806701c873b0b0ab52f719f3ea0225a38c",
+    "evidence/phase05_prior_results_status.json": "ab11c74d736a4cabc4a5bca1979754ee717c31f8cbd44ad32069ae3f6b302bb4",
+    "evidence/phase05_selected_users.json": "95624ce670bed6791f4a27860a637eeabc51711cf44644da183540da64123962",
+    "evidence/phase05_verified_ppr.json": "03c1081e25026a71975989dbfc0697ff294b59193a22f776977655ecd862875b",
+    "evidence/phase06_optimization.json": "47fece95f2414f5f008ba1ddc3b4fc435597388e522f275f060921048166eb9c",
+    "evidence/phase05_first_submission.json": "2ce6f0abff5048287300b3bad9313dec2ebc06e64676690dc40b2d41d29ab5a9"
+  },
+  "code_sha256": {
+    "src/objective_alignment.py": "921e04e8cd22e8e9f2949d566ce8892a9129b63d21f24a5955a94e43609f2a83",
+    "scripts/phase08_align.py": "df3e5d366e7e84680c481a1ad8d9ac9cf67332d9944b824a0e9850c18fdb11bc"
+  },
+  "production": {
+    "training_rows": 2612539,
+    "snapshot_queries": 11965,
+    "label_windows": [
+      [
+        "2020-04-12 21:00:00+00:00",
+        "2020-05-17 21:00:00+00:00"
+      ],
+      [
+        "2020-05-17 21:00:00+00:00",
+        "2020-06-21 21:00:00+00:00"
+      ],
+      [
+        "2020-06-21 21:00:00+00:00",
+        "2020-07-26 21:00:00+00:00"
+      ]
+    ],
+    "features": [
+      "rank_global",
+      "rank_frequency",
+      "rank_recency",
+      "rank_ppr",
+      "rank_cbf",
+      "rank_pool",
+      "total_broadcasts_watched",
+      "num_qualifying_broadcasts",
+      "total_watched_seconds",
+      "global_users",
+      "global_frequency",
+      "user_frequency",
+      "user_qualifying",
+      "airing_opportunities",
+      "mean_duration",
+      "recency_frequency",
+      "mean_coverage_all",
+      "max_coverage_all",
+      "days_ago",
+      "frequency_share",
+      "frequency_per_active_day",
+      "consumption_per_opportunity",
+      "completion_per_opportunity",
+      "historical_airings_per_day",
+      "future_airings_per_day",
+      "active_day_fraction",
+      "sessions_per_day",
+      "hours_per_day",
+      "airing_rate_shift",
+      "programme_rate_7",
+      "programme_active_rate_7",
+      "programme_exposure_rate_7",
+      "active_fraction_7",
+      "activity_shift_7",
+      "programme_shift_7",
+      "programme_rate_14",
+      "programme_active_rate_14",
+      "programme_exposure_rate_14",
+      "active_fraction_14",
+      "activity_shift_14",
+      "programme_shift_14",
+      "programme_rate_28",
+      "programme_active_rate_28",
+      "programme_exposure_rate_28",
+      "active_fraction_28",
+      "activity_shift_28",
+      "programme_shift_28",
+      "activity_shift",
+      "programme_stability",
+      "channel_stability",
+      "compatibility_channel_7",
+      "compatibility_hour_7",
+      "compatibility_dow_7",
+      "compatibility_channel_hour_7",
+      "compatibility_channel_dow_7",
+      "duration_mismatch_7",
+      "compatibility_channel_14",
+      "compatibility_hour_14",
+      "compatibility_dow_14",
+      "compatibility_channel_hour_14",
+      "compatibility_channel_dow_14",
+      "duration_mismatch_14",
+      "compatibility_channel_28",
+      "compatibility_hour_28",
+      "compatibility_dow_28",
+      "compatibility_channel_hour_28",
+      "compatibility_channel_dow_28",
+      "duration_mismatch_28",
+      "n80",
+      "n50",
+      "n20",
+      "n300",
+      "meaningful",
+      "strength_seconds",
+      "qualified_14",
+      "qualified_28",
+      "observed_days_ago",
+      "score_exposure_10",
+      "score_exposure_80",
+      "score_item_neighbors",
+      "score_context_retrieval",
+      "score_ppr",
+      "score_frequency",
+      "score_recency",
+      "score_global",
+      "score_recurrence",
+      "normalized_score_exposure_10",
+      "normalized_score_exposure_80",
+      "normalized_score_item_neighbors",
+      "normalized_score_context_retrieval",
+      "normalized_score_ppr",
+      "normalized_score_frequency",
+      "normalized_score_recency",
+      "normalized_score_global",
+      "normalized_score_recurrence"
+    ],
+    "prediction_cutoff": "2020-07-26 21:00:00+00:00",
+    "prediction_end": "2020-10-19 21:00:00+00:00",
+    "refit_evaluated_on_training_labels": false
+  },
+  "runtime_seconds": 170.7713617500849,
+  "submitted_to_kaggle": false
+}

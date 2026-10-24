@@ -1,0 +1,211 @@
+{
+  "created_msk": "2026-10-24T16:42:52.480748+03:00",
+  "winner": "lightgbm",
+  "parameters": {
+    "boosting_type": "gbdt",
+    "class_weight": null,
+    "colsample_bytree": 1.0,
+    "importance_type": "split",
+    "learning_rate": 0.05,
+    "max_depth": -1,
+    "min_child_samples": 50,
+    "min_child_weight": 0.001,
+    "min_split_gain": 0.0,
+    "n_estimators": 100,
+    "n_jobs": 4,
+    "num_leaves": 15,
+    "objective": "lambdarank",
+    "random_state": 42,
+    "reg_alpha": 0.0,
+    "reg_lambda": 2.0,
+    "subsample": 1.0,
+    "subsample_for_bin": 200000,
+    "subsample_freq": 0,
+    "verbosity": -1,
+    "deterministic": true,
+    "force_col_wise": true,
+    "lambdarank_truncation_level": 10
+  },
+  "validation": {
+    "model": "lightgbm",
+    "runtime_seconds": 40.039192331023514,
+    "eligible_programmes_count": 6384,
+    "candidate_coverage": 0.02913533834586466,
+    "distinct_recommended_programmes": 186,
+    "map_at_k_all": 0.5023077317473338,
+    "hit_rate_at_k_all": 0.8527481542247745,
+    "num_evaluation_users_all": 4876,
+    "num_users_with_relevant_all": 4612,
+    "num_users_zero_relevant_all": 264,
+    "map_at_k_submission": 0.5852727072310399,
+    "hit_rate_at_k_submission": 0.9293650793650794,
+    "num_evaluation_users_submission": 1260,
+    "num_users_with_relevant_submission": 1238,
+    "num_users_zero_relevant_submission": 22,
+    "training_rows": 429549,
+    "training_users": 4371,
+    "features": [
+      "rank_global",
+      "rank_frequency",
+      "rank_recency",
+      "rank_ppr",
+      "rank_cbf",
+      "total_broadcasts_watched",
+      "num_qualifying_broadcasts",
+      "total_watched_seconds",
+      "global_users",
+      "global_frequency",
+      "user_frequency",
+      "user_qualifying",
+      "airing_opportunities",
+      "mean_duration",
+      "recency_frequency",
+      "mean_coverage_all",
+      "max_coverage_all",
+      "days_ago",
+      "frequency_share"
+    ],
+    "fit_seconds": 2.3310474161989987,
+    "parameters": {
+      "boosting_type": "gbdt",
+      "class_weight": null,
+      "colsample_bytree": 1.0,
+      "importance_type": "split",
+      "learning_rate": 0.05,
+      "max_depth": -1,
+      "min_child_samples": 50,
+      "min_child_weight": 0.001,
+      "min_split_gain": 0.0,
+      "n_estimators": 100,
+      "n_jobs": 4,
+      "num_leaves": 15,
+      "objective": "lambdarank",
+      "random_state": 42,
+      "reg_alpha": 0.0,
+      "reg_lambda": 2.0,
+      "subsample": 1.0,
+      "subsample_for_bin": 200000,
+      "subsample_freq": 0,
+      "verbosity": -1,
+      "deterministic": true,
+      "force_col_wise": true,
+      "lambdarank_truncation_level": 10
+    }
+  },
+  "backup_validation": {
+    "model": "recency",
+    "runtime_seconds": 1.7221178752370179,
+    "eligible_programmes_count": 6384,
+    "candidate_coverage": 0.12813283208020051,
+    "distinct_recommended_programmes": 818,
+    "map_at_k_all": 0.4662832125603862,
+    "hit_rate_at_k_all": 0.832239540607055,
+    "num_evaluation_users_all": 4876,
+    "num_users_with_relevant_all": 4612,
+    "num_users_zero_relevant_all": 264,
+    "map_at_k_submission": 0.5519700176366831,
+    "hit_rate_at_k_submission": 0.9103174603174603,
+    "num_evaluation_users_submission": 1260,
+    "num_users_with_relevant_submission": 1238,
+    "num_users_zero_relevant_submission": 22,
+    "determinism_passed": true,
+    "fallback_users": 573
+  },
+  "prediction_cutoff_utc": "2020-07-26 21:00:00+00:00",
+  "training_pairs_full_history": 1371697,
+  "future_candidates": 6636,
+  "final_component_timing": {
+    "global": {
+      "runtime_seconds": 1.1875419998541474,
+      "determinism_passed": true
+    },
+    "frequency": {
+      "runtime_seconds": 1.5062076249159873,
+      "determinism_passed": true,
+      "fallback_users": 22
+    },
+    "recency": {
+      "runtime_seconds": 0.8121831249445677,
+      "determinism_passed": true,
+      "fallback_users": 22
+    },
+    "cbf": {
+      "runtime_seconds": 12.079008291941136,
+      "determinism_passed": true
+    },
+    "ppr_0.3": {
+      "runtime_seconds": 5.370214208960533,
+      "determinism_passed": true,
+      "convergence": {
+        "max_iterations": 11,
+        "max_residual": 5.091381913610741e-07,
+        "unconverged_users": 0
+      },
+      "fallback_users": 4
+    }
+  },
+  "production_ranker_refit": {
+    "performed": true,
+    "runtime_seconds": 2.7883653747849166,
+    "training_rows": 917381,
+    "training_users": 8797,
+    "label_windows": [
+      [
+        "2020-04-12 21:00:00+00:00",
+        "2020-05-17 21:00:00+00:00"
+      ],
+      [
+        "2020-05-17 21:00:00+00:00",
+        "2020-07-26 21:00:00+00:00"
+      ]
+    ],
+    "evaluated_on_training_labels": false,
+    "selection_frozen_before_refit": true
+  },
+  "csv_checks": {
+    "outputs/submission_best.csv": {
+      "valid": true,
+      "rows": 1260,
+      "exact_user_order": true,
+      "eligible_programmes": 6636,
+      "sha256": "e4ea08bbf34281b518e3c66fab0aebd5e80965f477d0eb8ff31724fbd4994262"
+    },
+    "outputs/submission_recency30_backup.csv": {
+      "valid": true,
+      "rows": 1260,
+      "exact_user_order": true,
+      "eligible_programmes": 6636,
+      "sha256": "d14a289fc682727dffacba8a8d12fb35dc320eff7510d163c6f54e49f85d2ab1"
+    }
+  },
+  "total_runtime_seconds": 12.076962416991591,
+  "submitted": false,
+  "completion_checks": {
+    "verified_msk": "2026-10-24T16:43:19.007626+03:00",
+    "tests_passed": 123,
+    "test_failures": 0,
+    "test_errors": 0,
+    "test_warnings": 42,
+    "test_log": "evidence/phase05_tests.log",
+    "test_junit": "evidence/phase05_tests.xml",
+    "independent_csv_validation_passed": true,
+    "independent_validator_command": "./venv/bin/python scripts/validate_submission.py outputs/submission_best.csv outputs/submission_recency30_backup.csv",
+    "backup_sha256_unchanged": true,
+    "prior_best_preserved": "outputs/submission_best_preserved_498f26f9ebe2.csv",
+    "prior_evidence_archive": "evidence/preserved_before_production_refit",
+    "production_training_users_field_counts_snapshot_queries": true
+  },
+  "dependencies": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "polars": "2.0.0",
+    "scikit-learn": "1.9.1",
+    "lightgbm": "4.7.0"
+  },
+  "limitations": [
+    "Local proxy; hidden Kaggle target unverified",
+    "Main split used for limited model selection; not an untouched test",
+    "Recency uses aggregate timestamps",
+    "Offline ranker/gate fitted before main validation; production ranker refit only after selection"
+  ]
+}

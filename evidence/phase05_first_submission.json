@@ -1,0 +1,16 @@
+{
+  "created_msk": "2026-10-24T16:33:17.487292+03:00",
+  "model": "Recency30",
+  "cutoff_utc": "2020-07-26 21:00:00+00:00",
+  "history_pairs": 1371697,
+  "half_life_days": 30,
+  "recency": "aggregate last-interaction proxy",
+  "csv": {
+    "valid": true,
+    "rows": 1260,
+    "exact_user_order": true,
+    "eligible_programmes": 6636,
+    "sha256": "d14a289fc682727dffacba8a8d12fb35dc320eff7510d163c6f54e49f85d2ab1"
+  },
+  "kaggle": "Not submitted; manual upload requested"
+}

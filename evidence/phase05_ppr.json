@@ -1,0 +1,20 @@
+{
+  "PPR_alpha0.15_frequency": {
+    "model": "PPR_alpha0.15_frequency",
+    "map_at_k_all": 0.4776991094585613,
+    "map_at_k_submission": 0.5614018959435616,
+    "hit_rate_at_k_all": 0.8481718653170832,
+    "hit_rate_at_k_submission": 0.9182539682539682,
+    "candidate_coverage": 0.07750353717968873,
+    "num_evaluation_users_all": 4841,
+    "num_evaluation_users_submission": 1260,
+    "num_users_with_relevant_all": 4599,
+    "num_users_with_relevant_submission": 1238,
+    "num_users_zero_relevant_all": 242,
+    "num_users_zero_relevant_submission": 22,
+    "distinct_recommended_programmes": 493,
+    "eligible_programmes_count": 6361,
+    "fallback_percentage": 0.0,
+    "runtime_seconds": 88.76647174963728
+  }
+}
